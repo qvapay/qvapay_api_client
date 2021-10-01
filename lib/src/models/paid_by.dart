@@ -1,6 +1,14 @@
 // ignore_for_file: public_member_api_docs
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'paid_by.g.dart';
+
+@JsonSerializable(
+  explicitToJson: true,
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+)
 class PaidBy extends Equatable {
   const PaidBy({
     this.uuid,
@@ -12,15 +20,8 @@ class PaidBy extends Equatable {
     this.kyc,
   });
 
-  factory PaidBy.fromJson(Map<String, dynamic> json) => PaidBy(
-        uuid: json['uuid'] as String?,
-        username: json['username'] as String,
-        name: json['name'] as String,
-        lastname: json['lastname'] as String?,
-        bio: json['bio'] as String?,
-        logo: json['logo'] as String?,
-        kyc: json['kyc'] as int?,
-      );
+  factory PaidBy.fromJson(Map<String, dynamic> json) => _$PaidByFromJson(json);
+  Map<String, dynamic> toJson() => _$PaidByToJson(this);
 
   final String? uuid;
   final String username;
@@ -29,16 +30,6 @@ class PaidBy extends Equatable {
   final String? bio;
   final String? logo;
   final int? kyc;
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        if (uuid != null) 'uuid': uuid,
-        'username': username,
-        'name': name,
-        if (lastname != null) 'lastname': lastname,
-        if (bio != null) 'bio': bio,
-        if (logo != null) 'logo': logo,
-        if (kyc != null) 'kyc': kyc,
-      };
 
   @override
   List<Object?> get props {

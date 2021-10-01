@@ -8,13 +8,16 @@ abstract class QvaPayApi {
   static const String baseUrl = 'https://qvapay.com/api/app';
 
   /// Authentication on the `QvaPay` platform.
-  Future<String> logIn(String email, String password);
+  Future<String> logIn({
+    required String email,
+    required String password,
+  });
 
   /// Logout the `QvaPay` platform.
   Future<void> logOut();
 
   /// Create a new user on the `QvaPay` platform.
-  Future<void> signIn({
+  Future<void> register({
     required String name,
     required String email,
     required String password,
@@ -30,7 +33,7 @@ abstract class OAuthStorage {
   Future<bool> save(String token);
 
   /// Get a token save in storage
-  Future<String?> feach();
+  Future<String?> fetch();
 
   /// Delete token in the storage
   Future<void> delete();
@@ -41,19 +44,14 @@ class OAuthMemoryStorage extends OAuthStorage {
   String? _token;
 
   @override
-  Future<void> delete() {
-    _token = null;
-    return Future.value();
-  }
+  Future<void> delete() async => _token = null;
 
   @override
-  Future<String?> feach() {
-    return Future.value(_token);
-  }
+  Future<String?> fetch() async => _token;
 
   @override
-  Future<bool> save(String token) {
+  Future<bool> save(String token) async {
     _token = token;
-    return Future.value(true);
+    return true;
   }
 }

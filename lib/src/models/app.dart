@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'app.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true, fieldRename: FieldRename.snake)
 class App extends Equatable {
   const App({
     required this.logo,

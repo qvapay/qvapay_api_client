@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:qvapay_api_client/src/exception.dart';
 import 'package:qvapay_api_client/src/models/me.dart';
-
 import 'package:qvapay_api_client/src/qvapay_api.dart';
 
 /// {@template qvapay_api_client}
@@ -13,16 +12,17 @@ class QvaPayApiClient extends QvaPayApi {
     Dio dio, [
     OAuthStorage? storage,
   ])  : _dio = dio,
-        _storage = storage ?? OAuthMemoryStorage() {
-    _storage.feach().then((value) => _accessToken = value ?? '');
-  }
+        _storage = storage ?? OAuthMemoryStorage();
 
   final Dio _dio;
-  String _accessToken = '';
+  String? _accessToken;
   final OAuthStorage _storage;
 
   @override
-  Future<String> logIn(String email, String password) async {
+  Future<String> logIn({
+    required String email,
+    required String password,
+  }) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         '${QvaPayApi.baseUrl}/login',
@@ -38,9 +38,9 @@ class QvaPayApiClient extends QvaPayApi {
         final dataMap = Map<String, String>.from(data);
         if (dataMap.containsKey('token')) {
           final token = dataMap['token'];
-          _accessToken = token!;
-          await _storage.save(token);
-          return Future.value(token);
+          _accessToken = token;
+          await _storage.save(token!);
+          return token;
         }
         throw AuthenticateException();
       }
@@ -83,7 +83,7 @@ class QvaPayApiClient extends QvaPayApi {
   }
 
   @override
-  Future<void> signIn({
+  Future<void> register({
     required String name,
     required String email,
     required String password,
@@ -115,7 +115,7 @@ class QvaPayApiClient extends QvaPayApi {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
         '${QvaPayApi.baseUrl}/me',
-        options: _authorizationHeader(),
+        options: await _authorizationHeader(),
       );
 
       final data = response.data;
@@ -130,7 +130,8 @@ class QvaPayApiClient extends QvaPayApi {
     throw ServerException();
   }
 
-  Options _authorizationHeader() {
+  Future<Options> _authorizationHeader() async {
+    _accessToken ??= await _storage.fetch();
     return Options(headers: <String, dynamic>{
       'accept': 'application/json',
       'Authorization': 'Bearer $_accessToken',

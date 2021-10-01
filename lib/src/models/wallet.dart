@@ -1,9 +1,12 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:qvapay_api_client/src/utils.dart';
 
-import 'package:qvapay_api_client/src/extension/date_extension.dart';
+part 'wallet.g.dart';
 
+@JsonSerializable(explicitToJson: true, fieldRename: FieldRename.snake)
 class Wallet extends Equatable {
   const Wallet({
     required this.transactionId,
@@ -18,31 +21,8 @@ class Wallet extends Equatable {
     required this.updatedAt,
   });
 
-  factory Wallet.fromJson(Map<String, dynamic> json) => Wallet(
-        transactionId: json['transaction_id'] as int,
-        invoiceId: json['invoice_id'] as String?,
-        walletType: json['wallet_type'] as String,
-        wallet: json['wallet'] as String,
-        value: json['value'] as String,
-        received: json['received'] as String,
-        txid: json['txid'] as String,
-        status: json['status'] as String,
-        createdAt: DateTime.parse(json['created_at'] as String),
-        updatedAt: DateTime.parse(json['updated_at'] as String),
-      );
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'transaction_id': transactionId,
-        'invoice_id': invoiceId,
-        'wallet_type': walletType,
-        'wallet': wallet,
-        'value': value,
-        'received': received,
-        'txid': txid,
-        'status': status,
-        'created_at': createdAt.toStringWithMicrosecond(),
-        'updated_at': updatedAt.toStringWithMicrosecond(),
-      };
+  factory Wallet.fromJson(Map<String, dynamic> json) => _$WalletFromJson(json);
+  Map<String, dynamic> toJson() => _$WalletToJson(this);
 
   final int transactionId;
   final String? invoiceId;
@@ -52,7 +32,9 @@ class Wallet extends Equatable {
   final String received;
   final String txid;
   final String status;
+  @JsonKey(toJson: toStringWithMicrosecond)
   final DateTime createdAt;
+  @JsonKey(toJson: toStringWithMicrosecond)
   final DateTime updatedAt;
 
   @override

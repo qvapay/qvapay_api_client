@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'owner.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true, fieldRename: FieldRename.snake)
 class Owner extends Equatable {
   const Owner({
     this.uuid,

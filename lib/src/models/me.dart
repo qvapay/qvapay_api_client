@@ -2,12 +2,11 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-
 import 'package:qvapay_api_client/src/models/latest_transaction.dart';
 
 part 'me.g.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(explicitToJson: true, fieldRename: FieldRename.snake)
 class Me extends Equatable {
   const Me({
     required this.uuid,
@@ -38,7 +37,7 @@ class Me extends Equatable {
   final String? totalIn;
   @JsonKey(name: 'total_out')
   final String? totalOut;
-  @JsonKey()
+  @JsonKey(name: 'latestTransactions')
   final List<LatestTransaction>? latestTransactions;
 
   @override

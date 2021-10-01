@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:qvapay_api_client/qvapay_api_client.dart';
 import 'package:qvapay_api_client/src/exception.dart';
 import 'package:qvapay_api_client/src/models/me.dart';
 import 'package:qvapay_api_client/src/qvapay_api.dart';
 import 'package:test/test.dart';
-import 'package:qvapay_api_client/qvapay_api_client.dart';
 
 import 'fixtures/fixture_adapter.dart';
 
@@ -32,7 +32,7 @@ void main() {
   setUp(() {
     mockDio = MockDio();
     mockStorage = MockOAuthStorage();
-    when(() => mockStorage.feach()).thenAnswer((_) async => tToken);
+    when(() => mockStorage.fetch()).thenAnswer((_) async => tToken);
     apiClient = QvaPayApiClient(mockDio, mockStorage);
   });
 
@@ -55,7 +55,10 @@ void main() {
               ),
             ));
 
-        final response = await apiClient.logIn('test@qvapay.com', 'sqp');
+        final response = await apiClient.logIn(
+          email: 'test@qvapay.com',
+          password: 'sqp',
+        );
 
         verify(() => mockStorage.save(response)).called(1);
         expect(response, tToken);
@@ -81,7 +84,7 @@ void main() {
         ));
 
         expect(
-          () => apiClient.logIn('test@qvapay.com', '?'),
+          () => apiClient.logIn(email: 'test@qvapay.com', password: '?'),
           throwsA(
             isA<AuthenticateException>().having(
               (e) => e.error,
@@ -90,7 +93,8 @@ void main() {
             ),
           ),
         );
-        verify(() => mockStorage.feach()).called(1);
+        // TODO: Comment this verify because fetch in login is not required
+        // verify(() => mockStorage.fetch()).called(1);
       });
       test(
         'should throw a [AuthenticateException] when the email is incorrect',
@@ -113,7 +117,7 @@ void main() {
           ));
 
           expect(
-              () => apiClient.logIn('test@qvapay.com', 'sqp'),
+              () => apiClient.logIn(email: 'test@qvapay.com', password: 'sqp'),
               throwsA(
                 isA<AuthenticateException>().having(
                   (e) => e.error,
@@ -121,7 +125,8 @@ void main() {
                   equals('User does not exist'),
                 ),
               ));
-          verify(() => mockStorage.feach()).called(1);
+          // TODO: Comment this verify because fetch in login is not required
+          // verify(() => mockStorage.fetch()).called(1);
         },
       );
       test(
@@ -147,7 +152,7 @@ void main() {
           ));
 
           expect(
-              () => apiClient.logIn(' ', 'sqp'),
+              () => apiClient.logIn(email: ' ', password: 'sqp'),
               throwsA(
                 isA<AuthenticateException>().having(
                   (e) => e.error,
@@ -155,7 +160,8 @@ void main() {
                   equals('El campo email es obligatorio.'),
                 ),
               ));
-          verify(() => mockStorage.feach()).called(1);
+          // TODO: Comment this verify because fetch in login is not required
+          // verify(() => mockStorage.fetch()).called(1);
         },
       );
 
@@ -180,14 +186,14 @@ void main() {
           ));
 
           expect(
-            () => apiClient.logIn('erich@qvapay.com', 'sqp'),
+            () => apiClient.logIn(email: 'erich@qvapay.com', password: 'sqp'),
             throwsA(isA<ServerException>()),
           );
         },
       );
     });
 
-    group('signin', () {
+    group('register', () {
       const tDataRegister = {
         'name': 'Erich García Cruz',
         'email': 'erich@qvapay.com',
@@ -207,7 +213,7 @@ void main() {
               ),
             ));
 
-        await apiClient.signIn(
+        await apiClient.register(
           name: tDataRegister['name']!,
           email: tDataRegister['email']!,
           password: tDataRegister['password']!,
@@ -241,7 +247,7 @@ void main() {
         ));
 
         expect(
-          () => apiClient.signIn(
+          () => apiClient.register(
             name: tDataRegister['name']!,
             email: tDataRegister['email']!,
             password: tDataRegister['password']!,
@@ -252,7 +258,8 @@ void main() {
             isNotNull,
           )),
         );
-        verify(() => mockStorage.feach()).called(1);
+        // TODO: Comment this verify because fetch in register is not required
+        // verify(() => mockStorage.fetch()).called(1);
       });
       test(
           'should throws a [ServerException] when the statusCode '
@@ -274,14 +281,15 @@ void main() {
         ));
 
         expect(
-          () => apiClient.signIn(
+          () => apiClient.register(
             name: tDataRegister['name']!,
             email: tDataRegister['email']!,
             password: tDataRegister['password']!,
           ),
           throwsA(isA<ServerException>()),
         );
-        verify(() => mockStorage.feach()).called(1);
+        // TODO: Comment this verify because fetch in register is not required
+        // verify(() => mockStorage.fetch()).called(1);
       });
     });
 
@@ -328,7 +336,8 @@ void main() {
             options: any(named: 'options'),
           ),
         ).called(1);
-        verify(() => mockStorage.feach()).called(1);
+        // TODO: Comment this verify because fetch in logout is not required
+        // verify(() => mockStorage.fetch()).called(1);
       });
     });
   });
