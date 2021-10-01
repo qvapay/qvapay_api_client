@@ -25,6 +25,21 @@ abstract class QvaPayApi {
 
   /// Obtain user data when is authenticated on the `QvaPay` platform.
   Future<Me> getUserData();
+
+  /// Authentication status.
+  Stream<OAuthStatus> get status;
+
+  /// Close a `StreamController` instance when it is not loger needs.
+  void dispose();
+}
+
+/// Authenticated satus.
+enum OAuthStatus {
+  /// When is authenticated.
+  authenticated,
+
+  /// When is not authenticated.
+  unauthenticated,
 }
 
 /// Use to implement a custom token storage

@@ -62,6 +62,10 @@ void main() {
 
         verify(() => mockStorage.save(response)).called(1);
         expect(response, tToken);
+        expect(
+          apiClient.status,
+          emitsInOrder(<OAuthStatus>[OAuthStatus.authenticated]),
+        );
       });
       test(
           'should throw a [AuthenticateException] when '
@@ -93,8 +97,6 @@ void main() {
             ),
           ),
         );
-        // TODO: Comment this verify because fetch in login is not required
-        // verify(() => mockStorage.fetch()).called(1);
       });
       test(
         'should throw a [AuthenticateException] when the email is incorrect',
@@ -125,8 +127,6 @@ void main() {
                   equals('User does not exist'),
                 ),
               ));
-          // TODO: Comment this verify because fetch in login is not required
-          // verify(() => mockStorage.fetch()).called(1);
         },
       );
       test(
@@ -160,8 +160,6 @@ void main() {
                   equals('El campo email es obligatorio.'),
                 ),
               ));
-          // TODO: Comment this verify because fetch in login is not required
-          // verify(() => mockStorage.fetch()).called(1);
         },
       );
 
@@ -258,8 +256,6 @@ void main() {
             isNotNull,
           )),
         );
-        // TODO: Comment this verify because fetch in register is not required
-        // verify(() => mockStorage.fetch()).called(1);
       });
       test(
           'should throws a [ServerException] when the statusCode '
@@ -288,8 +284,6 @@ void main() {
           ),
           throwsA(isA<ServerException>()),
         );
-        // TODO: Comment this verify because fetch in register is not required
-        // verify(() => mockStorage.fetch()).called(1);
       });
     });
 
@@ -316,6 +310,10 @@ void main() {
           ),
         ).called(1);
         verify(() => mockStorage.delete()).called(1);
+        expect(
+          apiClient.status,
+          emitsInOrder(<OAuthStatus>[OAuthStatus.unauthenticated]),
+        );
       });
 
       test('should throw a [ServerException] when an error occurs', () async {
@@ -336,8 +334,6 @@ void main() {
             options: any(named: 'options'),
           ),
         ).called(1);
-        // TODO: Comment this verify because fetch in logout is not required
-        // verify(() => mockStorage.fetch()).called(1);
       });
     });
   });
@@ -385,6 +381,10 @@ void main() {
           throwsA(
             isA<UnauthorizedException>(),
           ));
+      expect(
+        apiClient.status,
+        emitsInOrder(<OAuthStatus>[OAuthStatus.unauthenticated]),
+      );
     });
   });
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:qvapay_api_client/src/exception.dart';
 import 'package:qvapay_api_client/src/models/me.dart';
@@ -17,6 +19,7 @@ class QvaPayApiClient extends QvaPayApi {
   final Dio _dio;
   String? _accessToken;
   final OAuthStorage _storage;
+  final _controller = StreamController<OAuthStatus>();
 
   @override
   Future<String> logIn({
@@ -39,9 +42,12 @@ class QvaPayApiClient extends QvaPayApi {
         if (dataMap.containsKey('token')) {
           final token = dataMap['token'];
           _accessToken = token;
+          _controller.add(OAuthStatus.authenticated);
           await _storage.save(token!);
           return token;
         }
+        _controller.add(OAuthStatus.unauthenticated);
+
         throw AuthenticateException();
       }
     } on DioError catch (e) {
@@ -73,6 +79,7 @@ class QvaPayApiClient extends QvaPayApi {
       );
 
       if (response.statusCode == 200) {
+        _controller.add(OAuthStatus.unauthenticated);
         await _storage.delete();
       }
 
@@ -124,7 +131,10 @@ class QvaPayApiClient extends QvaPayApi {
         return Me.fromJson(data);
       }
     } on DioError catch (e) {
-      if (e.response!.statusCode == 401) throw UnauthorizedException();
+      if (e.response!.statusCode == 401) {
+        _controller.add(OAuthStatus.unauthenticated);
+        throw UnauthorizedException();
+      }
       throw ServerException();
     }
     throw ServerException();
@@ -137,4 +147,12 @@ class QvaPayApiClient extends QvaPayApi {
       'Authorization': 'Bearer $_accessToken',
     });
   }
+
+  @override
+  void dispose() {
+    _controller.close();
+  }
+
+  @override
+  Stream<OAuthStatus> get status => _controller.stream;
 }
