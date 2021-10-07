@@ -75,7 +75,7 @@ void main() {
               data: any<Map<String, String>>(named: 'data'),
             )).thenThrow(DioError(
           response: Response<Map<String, dynamic>>(
-            data: const <String, String>{'message': 'Password mismatch'},
+            data: const <String, dynamic>{'message': 'Password mismatch'},
             statusCode: 422,
             requestOptions: RequestOptions(
               path: '${QvaPayApi.baseUrl}/login',

@@ -55,7 +55,7 @@ class QvaPayApiClient extends QvaPayApi {
         final data = e.response!.data as Map<String, dynamic>;
         if (data.keys.contains('message')) {
           throw AuthenticateException(
-              error: (e.response!.data! as Map<String, String>)['message']);
+              error: (data.cast<String, String>())['message']);
         } else {
           final errors = data
               .cast<String, List<dynamic>>()
