@@ -1,6 +1,6 @@
 name: qvapay_api_client
 description: Dart API Client which wraps the QvaPay API.
-version: 0.0.1
+version: 0.0.2
 publish_to: none
 
 environment:
