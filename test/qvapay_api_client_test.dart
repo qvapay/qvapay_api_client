@@ -326,7 +326,11 @@ void main() {
           ),
         ));
 
-        expect(() => apiClient.logOut(), throwsA(isA<ServerException>()));
+        try {
+          await apiClient.logOut();
+        } catch (e) {
+          expect(e, isA<ServerException>());
+        }
 
         verify(
           () => mockDio.get<String>(

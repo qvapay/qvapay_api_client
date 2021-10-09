@@ -12,6 +12,7 @@ class Me extends Equatable {
     required this.uuid,
     required this.username,
     required this.name,
+    required this.email,
     this.lastname,
     this.bio,
     this.logo,
@@ -28,6 +29,7 @@ class Me extends Equatable {
   final String uuid;
   final String username;
   final String name;
+  final String email;
   final String? lastname;
   final String? bio;
   final String? logo;
@@ -46,6 +48,7 @@ class Me extends Equatable {
       uuid,
       username,
       name,
+      email,
       lastname,
       bio,
       logo,
