@@ -75,7 +75,7 @@ class QvaPayApiClient extends QvaPayApi {
     try {
       final response = await _dio.get<String>(
         '${QvaPayApi.baseUrl}/logout',
-        // options: _authorizationHeader(),
+        options: await _authorizationHeader(),
       );
 
       if (response.statusCode == 200) {
