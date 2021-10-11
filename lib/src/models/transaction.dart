@@ -8,11 +8,11 @@ import 'package:qvapay_api_client/src/models/service_buy.dart';
 import 'package:qvapay_api_client/src/models/wallet.dart';
 import 'package:qvapay_api_client/src/utils.dart';
 
-part 'latest_transaction.g.dart';
+part 'transaction.g.dart';
 
 @JsonSerializable(explicitToJson: true, fieldRename: FieldRename.snake)
-class LatestTransaction extends Equatable {
-  const LatestTransaction({
+class Transaction extends Equatable {
+  const Transaction({
     required this.uuid,
     required this.appId,
     required this.amount,
@@ -30,9 +30,9 @@ class LatestTransaction extends Equatable {
     this.serviceBuy,
   });
 
-  factory LatestTransaction.fromJson(Map<String, dynamic> json) =>
-      _$LatestTransactionFromJson(json);
-  Map<String, dynamic> toJson() => _$LatestTransactionToJson(this);
+  factory Transaction.fromJson(Map<String, dynamic> json) =>
+      _$TransactionFromJson(json);
+  Map<String, dynamic> toJson() => _$TransactionToJson(this);
 
   final String uuid;
   final int appId;

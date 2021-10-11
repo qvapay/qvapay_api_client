@@ -1,13 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'latest_transaction.dart';
+part of 'transaction.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-LatestTransaction _$LatestTransactionFromJson(Map<String, dynamic> json) =>
-    LatestTransaction(
+Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
       uuid: json['uuid'] as String,
       appId: json['app_id'] as int,
       amount: json['amount'] as String,
@@ -29,7 +28,7 @@ LatestTransaction _$LatestTransactionFromJson(Map<String, dynamic> json) =>
           : ServiceBuy.fromJson(json['servicebuy'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$LatestTransactionToJson(LatestTransaction instance) =>
+Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
     <String, dynamic>{
       'uuid': instance.uuid,
       'app_id': instance.appId,

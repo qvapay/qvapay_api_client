@@ -2,7 +2,7 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:qvapay_api_client/src/models/latest_transaction.dart';
+import 'package:qvapay_api_client/src/models/transaction.dart';
 
 part 'me.g.dart';
 
@@ -40,7 +40,7 @@ class Me extends Equatable {
   @JsonKey(name: 'total_out')
   final String? totalOut;
   @JsonKey(name: 'latestTransactions')
-  final List<LatestTransaction>? latestTransactions;
+  final List<Transaction>? latestTransactions;
 
   @override
   List<Object?> get props {

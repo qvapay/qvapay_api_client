@@ -19,7 +19,7 @@ Me _$MeFromJson(Map<String, dynamic> json) => Me(
       totalIn: json['total_in'] as String?,
       totalOut: json['total_out'] as String?,
       latestTransactions: (json['latestTransactions'] as List<dynamic>?)
-          ?.map((e) => LatestTransaction.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Transaction.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
