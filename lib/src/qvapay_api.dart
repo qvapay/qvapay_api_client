@@ -1,5 +1,5 @@
-import 'package:qvapay_api_client/src/models/transaction.dart';
 import 'package:qvapay_api_client/src/models/me.dart';
+import 'package:qvapay_api_client/src/models/transaction.dart';
 
 /// {@template qvapay_api}
 /// Abstract class for QvaPay API endpoint.
@@ -43,6 +43,10 @@ abstract class QvaPayApi {
     String remoteId,
     String description,
   });
+
+  /// Get all the details of a specific transaction based on its `UUID`.
+  Future<Transaction?> getTransactionDetails({required String uuid});
+
   /// Authentication status.
   Stream<OAuthStatus> get status;
 

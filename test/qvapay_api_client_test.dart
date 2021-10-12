@@ -31,7 +31,18 @@ void main() {
 
   final tTransactionsResponse =
       json.decode(fixture('transactions.json')) as List<dynamic>;
-  final tTransactionsList = tTransactionsResponse.cast<Map<String, dynamic>>();
+
+  List<Transaction> castTransactionResponse(List<dynamic> transaction) {
+    final tTransactionsList =
+        tTransactionsResponse.cast<Map<String, dynamic>>();
+
+    return List<Transaction>.from(
+      tTransactionsList.map<Transaction>((e) => Transaction.fromJson(e)),
+    );
+  }
+
+  final tTransactionResponse =
+      json.decode(fixture('transaction.json')) as List<dynamic>;
 
   setUp(() {
     mockDio = MockDio();
@@ -397,10 +408,7 @@ void main() {
   });
 
   group('getTransactions', () {
-    final tTransactions = List<Transaction>.from(
-      tTransactionsList.map<Transaction>((e) => Transaction.fromJson(e)),
-    );
-
+    final tTransactions = castTransactionResponse(tTransactionsResponse);
     test('should return a list of [Transaction]', () async {
       when(() => mockStorage.fetch()).thenAnswer((_) async => 'token');
       when(() => mockDio.get<List<dynamic>>(
@@ -462,6 +470,81 @@ void main() {
 
       expect(
         () async => apiClient.getTransactrions(),
+        throwsA(isA<UnauthorizedException>()),
+      );
+      expect(
+        apiClient.status,
+        emitsInOrder(<OAuthStatus>[OAuthStatus.unauthenticated]),
+      );
+      verify(() => mockStorage.fetch()).called(1);
+    });
+  });
+
+  group('getTransactionDetails', () {
+    const tUuid = 'transaction_uuid';
+
+    final tTransaction = castTransactionResponse(tTransactionResponse);
+
+    test('should return [Transaction] when it matches the uuid', () async {
+      when(() => mockStorage.fetch()).thenAnswer((_) async => 'token');
+      when(() => mockDio.get<List<dynamic>>(
+            '${QvaPayApi.baseUrl}/transactions/$tUuid',
+            options: any(named: 'options'),
+          )).thenAnswer((_) async => Response(
+            data: tTransactionResponse,
+            statusCode: 200,
+            requestOptions: RequestOptions(
+              path: '${QvaPayApi.baseUrl}/transactions/$tUuid',
+            ),
+          ));
+
+      final response = await apiClient.getTransactionDetails(uuid: tUuid);
+
+      expect(response, equals(tTransaction));
+      verify(() => mockStorage.fetch()).called(1);
+    });
+    test('should return `null` when there is no match', () async {
+      when(() => mockStorage.fetch()).thenAnswer((_) async => 'token');
+      when(() => mockDio.get<List<dynamic>>(
+            '${QvaPayApi.baseUrl}/transactions/$tUuid',
+            options: any(named: 'options'),
+          )).thenAnswer((_) async => Response(
+            data: <dynamic>[],
+            statusCode: 200,
+            requestOptions: RequestOptions(
+              path: '${QvaPayApi.baseUrl}/transactions/$tUuid',
+            ),
+          ));
+
+      final response = await apiClient.getTransactionDetails(uuid: tUuid);
+
+      expect(response, isNull);
+      verify(() => mockStorage.fetch()).called(1);
+    });
+
+    test(
+        'should throw a [UnauthorizedException] when you are not '
+        'authenticated on the platform.', () async {
+      when(() => mockStorage.fetch()).thenAnswer((_) async => null);
+      when(() => mockDio.get<Map<String, dynamic>>(
+            '${QvaPayApi.baseUrl}/transactions/$tUuid',
+            options: any(named: 'options'),
+          )).thenThrow(DioError(
+        response: Response<Map<String, dynamic>>(
+          data: <String, String>{'message': 'Unauthenticated.'},
+          statusCode: 401,
+          requestOptions: RequestOptions(
+            path: '${QvaPayApi.baseUrl}/transactions/$tUuid',
+          ),
+        ),
+        requestOptions: RequestOptions(
+          path: '${QvaPayApi.baseUrl}/transactions/$tUuid',
+        ),
+        error: DioErrorType.response,
+      ));
+
+      expect(
+        () async => apiClient.getTransactionDetails(uuid: tUuid),
         throwsA(isA<UnauthorizedException>()),
       );
       expect(
