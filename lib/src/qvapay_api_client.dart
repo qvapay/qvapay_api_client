@@ -157,7 +157,7 @@ class QvaPayApiClient extends QvaPayApi {
   Stream<OAuthStatus> get status => _controller.stream;
 
   @override
-  Future<List<Transaction>> getTransactrions({
+  Future<List<Transaction>> getTransactions({
     DateTime? start,
     DateTime? end,
     List<String>? status,

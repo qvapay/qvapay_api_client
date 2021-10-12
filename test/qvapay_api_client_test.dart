@@ -422,7 +422,7 @@ void main() {
             ),
           ));
 
-      final response = await apiClient.getTransactrions();
+      final response = await apiClient.getTransactions();
 
       expect(response, equals(tTransactions));
       verify(() => mockStorage.fetch()).called(1);
@@ -441,7 +441,7 @@ void main() {
             ),
           ));
 
-      final response = await apiClient.getTransactrions();
+      final response = await apiClient.getTransactions();
 
       expect(response, List<Transaction>.empty());
       verify(() => mockStorage.fetch()).called(1);
@@ -469,7 +469,7 @@ void main() {
       ));
 
       expect(
-        () async => apiClient.getTransactrions(),
+        () async => apiClient.getTransactions(),
         throwsA(isA<UnauthorizedException>()),
       );
       expect(

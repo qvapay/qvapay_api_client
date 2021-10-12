@@ -36,7 +36,7 @@ abstract class QvaPayApi {
   /// status: [paid, pending, canceled]
   /// remote_id: string
   /// description: string
-  Future<List<Transaction>> getTransactrions({
+  Future<List<Transaction>> getTransactions({
     DateTime start,
     DateTime end,
     List<String> status,
