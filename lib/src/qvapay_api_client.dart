@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:qvapay_api_client/src/exception.dart';
-import 'package:qvapay_api_client/src/models/me.dart';
+import 'package:qvapay_api_client/src/models/models.dart';
 import 'package:qvapay_api_client/src/qvapay_api.dart';
 
 /// {@template qvapay_api_client}
@@ -51,7 +51,7 @@ class QvaPayApiClient extends QvaPayApi {
         throw AuthenticateException();
       }
     } on DioError catch (e) {
-      if (e.response!.statusCode == 422) {
+      if (e.response != null && e.response!.statusCode == 422) {
         final data = e.response!.data as Map<String, dynamic>;
         if (data.keys.contains('message')) {
           throw AuthenticateException(
@@ -105,7 +105,7 @@ class QvaPayApiClient extends QvaPayApi {
         },
       );
     } on DioError catch (e) {
-      if (e.response!.statusCode == 422) {
+      if (e.response != null && e.response!.statusCode == 422) {
         final data = e.response!.data as Map<String, dynamic>;
         final err = data
             .cast<String, List<dynamic>>()
@@ -131,7 +131,7 @@ class QvaPayApiClient extends QvaPayApi {
         return Me.fromJson(data);
       }
     } on DioError catch (e) {
-      if (e.response!.statusCode == 401) {
+      if (e.response != null && e.response!.statusCode == 401) {
         _controller.add(OAuthStatus.unauthenticated);
         throw UnauthorizedException();
       }
@@ -155,4 +155,37 @@ class QvaPayApiClient extends QvaPayApi {
 
   @override
   Stream<OAuthStatus> get status => _controller.stream;
+
+  @override
+  Future<List<Transaction>> getTransactrions({
+    DateTime? start,
+    DateTime? end,
+    List<String>? status,
+    String? remoteId,
+    String? description,
+  }) async {
+    try {
+      final response = await _dio.get<List<dynamic>>(
+        '${QvaPayApi.baseUrl}/transactions',
+        options: await _authorizationHeader(),
+      );
+
+      final data = response.data;
+
+      if (data != null) {
+        final transactionsResponse = data.cast<Map<String, dynamic>>();
+
+        return List<Transaction>.from(
+          transactionsResponse.map<Transaction>((e) => Transaction.fromJson(e)),
+        );
+      }
+    } on DioError catch (e) {
+      if (e.response != null && e.response!.statusCode == 401) {
+        _controller.add(OAuthStatus.unauthenticated);
+        throw UnauthorizedException();
+      }
+      throw ServerException();
+    }
+    throw ServerException();
+  }
 }

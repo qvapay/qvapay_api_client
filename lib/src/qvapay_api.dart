@@ -1,3 +1,4 @@
+import 'package:qvapay_api_client/src/models/transaction.dart';
 import 'package:qvapay_api_client/src/models/me.dart';
 
 /// {@template qvapay_api}
@@ -26,6 +27,22 @@ abstract class QvaPayApi {
   /// Obtain user data when is authenticated on the `QvaPay` platform.
   Future<Me> getUserData();
 
+  /// Get the last 30 transactions from the authenticated user.
+  ///
+  /// In `QvaPay` everything constitutes a transaction.
+  /// You can filter the result using the parameters:
+  /// start: date_time
+  /// end: date_time
+  /// status: [paid, pending, canceled]
+  /// remote_id: string
+  /// description: string
+  Future<List<Transaction>> getTransactrions({
+    DateTime start,
+    DateTime end,
+    List<String> status,
+    String remoteId,
+    String description,
+  });
   /// Authentication status.
   Stream<OAuthStatus> get status;
 
