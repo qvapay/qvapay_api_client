@@ -13,13 +13,16 @@ class QvaPayApiClient extends QvaPayApi {
   QvaPayApiClient(
     Dio dio, [
     OAuthStorage? storage,
+    String? baseUrl,
   ])  : _dio = dio,
-        _storage = storage ?? OAuthMemoryStorage();
+        _storage = storage ?? OAuthMemoryStorage(),
+        _baseUrl = baseUrl ?? QvaPayApi.baseUrl;
 
   final Dio _dio;
   String? _accessToken;
   final OAuthStorage _storage;
   final _controller = StreamController<OAuthStatus>();
+  final String _baseUrl;
 
   @override
   Future<String> logIn({
@@ -28,7 +31,7 @@ class QvaPayApiClient extends QvaPayApi {
   }) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
-        '${QvaPayApi.baseUrl}/login',
+        '$_baseUrl/login',
         data: {
           'email': email,
           'password': password,
@@ -74,7 +77,7 @@ class QvaPayApiClient extends QvaPayApi {
   Future<void> logOut() async {
     try {
       final response = await _dio.get<String>(
-        '${QvaPayApi.baseUrl}/logout',
+        '$_baseUrl/logout',
         options: await _authorizationHeader(),
       );
 
@@ -97,7 +100,7 @@ class QvaPayApiClient extends QvaPayApi {
   }) async {
     try {
       await _dio.post<Map<String, dynamic>>(
-        '${QvaPayApi.baseUrl}/register',
+        '$_baseUrl/register',
         data: {
           'name': name,
           'email': email,
@@ -121,7 +124,7 @@ class QvaPayApiClient extends QvaPayApi {
   Future<Me> getUserData() async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
-        '${QvaPayApi.baseUrl}/me',
+        '$_baseUrl/me',
         options: await _authorizationHeader(),
       );
 
@@ -166,7 +169,7 @@ class QvaPayApiClient extends QvaPayApi {
   }) async {
     try {
       final response = await _dio.get<List<dynamic>>(
-        '${QvaPayApi.baseUrl}/transactions',
+        '$_baseUrl/transactions',
         options: await _authorizationHeader(),
       );
 
@@ -193,7 +196,7 @@ class QvaPayApiClient extends QvaPayApi {
   Future<Transaction?> getTransactionDetails({required String uuid}) async {
     try {
       final response = await _dio.get<List<dynamic>>(
-        '${QvaPayApi.baseUrl}/transactions/$uuid',
+        '$_baseUrl/transactions/$uuid',
         options: await _authorizationHeader(),
       );
 
