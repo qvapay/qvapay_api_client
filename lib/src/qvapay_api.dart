@@ -22,6 +22,7 @@ abstract class QvaPayApi {
     required String name,
     required String email,
     required String password,
+    String? invite,
   });
 
   /// Obtain user data when is authenticated on the `QvaPay` platform.

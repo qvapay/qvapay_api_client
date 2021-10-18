@@ -210,6 +210,7 @@ void main() {
         'name': 'Erich García Cruz',
         'email': 'erich@qvapay.com',
         'password': 'test',
+        'invite': 'BACHE_CUBANO',
       };
       test(
           'should return the `statusCode 200` when registration is '
@@ -229,6 +230,7 @@ void main() {
           name: tDataRegister['name']!,
           email: tDataRegister['email']!,
           password: tDataRegister['password']!,
+          invite: tDataRegister['invite'],
         );
 
         verify(() => mockDio.post<Map<String, dynamic>>(
@@ -263,6 +265,7 @@ void main() {
             name: tDataRegister['name']!,
             email: tDataRegister['email']!,
             password: tDataRegister['password']!,
+            invite: tDataRegister['invite'],
           ),
           throwsA(isA<RegisterException>().having(
             (e) => e.error,
@@ -295,6 +298,7 @@ void main() {
             name: tDataRegister['name']!,
             email: tDataRegister['email']!,
             password: tDataRegister['password']!,
+            invite: tDataRegister['invite'],
           ),
           throwsA(isA<ServerException>()),
         );

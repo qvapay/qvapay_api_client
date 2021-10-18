@@ -97,6 +97,7 @@ class QvaPayApiClient extends QvaPayApi {
     required String name,
     required String email,
     required String password,
+    String? invite,
   }) async {
     try {
       await _dio.post<Map<String, dynamic>>(
@@ -105,6 +106,7 @@ class QvaPayApiClient extends QvaPayApi {
           'name': name,
           'email': email,
           'password': password,
+          'invite': invite,
         },
       );
     } on DioError catch (e) {
