@@ -33,8 +33,7 @@ void main() {
       json.decode(fixture('transactions.json')) as List<dynamic>;
 
   List<Transaction> castTransactionResponse(List<dynamic> transaction) {
-    final tTransactionsList =
-        tTransactionsResponse.cast<Map<String, dynamic>>();
+    final tTransactionsList = transaction.cast<Map<String, dynamic>>();
 
     return List<Transaction>.from(
       tTransactionsList.map<Transaction>((e) => Transaction.fromJson(e)),
@@ -481,10 +480,9 @@ void main() {
   });
 
   group('getTransactionDetails', () {
-    const tUuid = 'transaction_uuid';
+    const tUuid = 'c67af7d0-a699-4e50-82d5-cfeaa9ed2b7';
 
     final tTransaction = castTransactionResponse(tTransactionResponse);
-
     test('should return [Transaction] when it matches the uuid', () async {
       when(() => mockStorage.fetch()).thenAnswer((_) async => 'token');
       when(() => mockDio.get<List<dynamic>>(
@@ -500,7 +498,7 @@ void main() {
 
       final response = await apiClient.getTransactionDetails(uuid: tUuid);
 
-      expect(response, equals(tTransaction));
+      expect(response, equals(tTransaction[0]));
       verify(() => mockStorage.fetch()).called(1);
     });
     test('should return `null` when there is no match', () async {
