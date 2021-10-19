@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:qvapay_api_client/src/exception.dart';
 import 'package:qvapay_api_client/src/models/models.dart';
 import 'package:qvapay_api_client/src/qvapay_api.dart';
+import 'package:qvapay_api_client/src/utils.dart';
 
 /// {@template qvapay_api_client}
 /// Dart API Client which wraps the [QvaPay API](https://documenter.getpostman.com/view/8765260/TzzHnDGw)
@@ -165,13 +166,33 @@ class QvaPayApiClient extends QvaPayApi {
   Future<List<Transaction>> getTransactions({
     DateTime? start,
     DateTime? end,
-    List<String>? status,
     String? remoteId,
     String? description,
   }) async {
     try {
+      var searchParm = '';
+      if (start != null) {
+        searchParm = '${searchParm}start=${toStringWithMicrosecond(start)}';
+      }
+      if (end != null) {
+        searchParm = '$searchParm&end=${toStringWithMicrosecond(end)}';
+      }
+      if (remoteId != null) {
+        searchParm = '$searchParm&remoteId=$remoteId';
+      }
+      if (description != null) {
+        searchParm = '$searchParm&description=$description';
+      }
+      if (searchParm.startsWith('&')) {
+        searchParm = searchParm.replaceFirst('&', '?');
+      } else {
+        searchParm = '?$searchParm';
+      }
+
       final response = await _dio.get<List<dynamic>>(
-        '$_baseUrl/transactions',
+        searchParm.length == 1
+            ? '$_baseUrl/transactions'
+            : Uri.encodeFull('$_baseUrl/transactions$searchParm'),
         options: await _authorizationHeader(),
       );
 

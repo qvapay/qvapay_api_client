@@ -6,6 +6,8 @@ import 'package:qvapay_api_client/qvapay_api_client.dart';
 import 'package:qvapay_api_client/src/exception.dart';
 import 'package:qvapay_api_client/src/models/me.dart';
 import 'package:qvapay_api_client/src/qvapay_api.dart';
+import 'package:qvapay_api_client/src/utils.dart';
+
 import 'package:test/test.dart';
 
 import 'fixtures/fixture_adapter.dart';
@@ -50,9 +52,25 @@ void main() {
     apiClient = QvaPayApiClient(mockDio, mockStorage);
   });
 
-  setUpAll(() {});
+  void whenTransactionsParamInUrl({required String url}) {
+    when(() => mockDio.get<List<dynamic>>(
+          url,
+          options: any(named: 'options'),
+        )).thenAnswer((_) async => Response(
+          data: <dynamic>[],
+          statusCode: 200,
+          requestOptions: RequestOptions(
+            path: url,
+          ),
+        ));
+  }
 
-  group('Storage', () {});
+  void verifyTransactionParamInUrl({required String url}) {
+    verify(() => mockDio.get<List<dynamic>>(
+          url,
+          options: any(named: 'options'),
+        )).called(1);
+  }
 
   group('authentication', () {
     group('login', () {
@@ -480,6 +498,89 @@ void main() {
         emitsInOrder(<OAuthStatus>[OAuthStatus.unauthenticated]),
       );
       verify(() => mockStorage.fetch()).called(1);
+    });
+
+    group('when parameter', () {
+      final tParamStartDate = DateTime(2021, 10, 17);
+      final tParamEndDate = DateTime(2021, 10, 28);
+
+      final tStartDateString = toStringWithMicrosecond(tParamStartDate);
+      final tEndDateString = toStringWithMicrosecond(tParamEndDate);
+
+      const tRemoteId = '35395355149081';
+
+      const tDescription = 'Mobile TOP_UP';
+
+      test('all are null', () async {
+        final transactionUrl = '${QvaPayApi.baseUrl}/transactions';
+
+        whenTransactionsParamInUrl(url: transactionUrl);
+
+        await apiClient.getTransactions();
+
+        verifyTransactionParamInUrl(url: transactionUrl);
+      });
+
+      test('all are not null', () async {
+        const transactionUrl = 'https://qvapay.com/api/app/transactions?'
+            'start=2021-10-17T00:00:00.00000Z&end=2021-10-28T00:00:00.00000Z'
+            '&remoteId=35395355149081'
+            '&description=Mobile%20TOP_UP';
+
+        whenTransactionsParamInUrl(url: transactionUrl);
+
+        await apiClient.getTransactions(
+          start: tParamStartDate,
+          end: tParamEndDate,
+          remoteId: tRemoteId,
+          description: tDescription,
+        );
+
+        verifyTransactionParamInUrl(url: transactionUrl);
+      });
+
+      test('`start` is not null', () async {
+        final startUrl =
+            '${QvaPayApi.baseUrl}/transactions?start=$tStartDateString';
+
+        whenTransactionsParamInUrl(url: startUrl);
+
+        await apiClient.getTransactions(start: tParamStartDate);
+
+        verifyTransactionParamInUrl(url: startUrl);
+      });
+
+      test('`end` is not null', () async {
+        final endUrl = '${QvaPayApi.baseUrl}/transactions?end=$tEndDateString';
+
+        whenTransactionsParamInUrl(url: endUrl);
+
+        await apiClient.getTransactions(end: tParamEndDate);
+
+        verifyTransactionParamInUrl(url: endUrl);
+      });
+
+      test('`remoteId` is not null', () async {
+        final remoteIdUrl =
+            '${QvaPayApi.baseUrl}/transactions?remoteId=$tRemoteId';
+
+        whenTransactionsParamInUrl(url: remoteIdUrl);
+
+        await apiClient.getTransactions(remoteId: tRemoteId);
+
+        verifyTransactionParamInUrl(url: remoteIdUrl);
+      });
+
+      test('`description` is not null', () async {
+        final descriptionUrl =
+            '${QvaPayApi.baseUrl}/transactions?description=Mobile%20TOP_UP';
+
+        whenTransactionsParamInUrl(url: descriptionUrl);
+
+        await apiClient.getTransactions(description: tDescription);
+
+        verifyTransactionParamInUrl(url: descriptionUrl);
+      });
     });
   });
 
