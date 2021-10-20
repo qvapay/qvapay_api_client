@@ -1,0 +1,19 @@
+{
+  "uuid": "a0914c93-c93c-42b4-a8ec-4d12ebb7cda7",
+  "app_id": 0,
+  "amount": 11.56,
+  "description": "Pollo por pescado",
+  "remote_id": "QVAPAY_APP",
+  "status": "pending",
+  "updated_at": "2021-09-06T05:17:54.000000Z",
+  "created_at": "2021-09-06T05:17:54.000000Z",
+  "pay_to": {
+    "uuid": "796a9e01-3d67-4a42-9dc2-02a5d069fa23",
+    "username": "erichgarciacruz1",
+    "name": "Erich",
+    "lastname": "Garcia Cruz",
+    "bio": "Bitcoin lover",
+    "logo": "profiles/zV93I93mbWrZo0fKgwGcpWFWDn41UYfAgj7wNCbf.jpg",
+    "kyc": 1
+  }
+}

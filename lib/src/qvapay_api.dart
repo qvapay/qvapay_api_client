@@ -1,6 +1,5 @@
 import 'package:qvapay_api_client/src/exception.dart';
-import 'package:qvapay_api_client/src/models/me.dart';
-import 'package:qvapay_api_client/src/models/transaction.dart';
+import 'package:qvapay_api_client/src/models/models.dart';
 
 /// {@template qvapay_api}
 /// Abstract class for QvaPay API endpoint.
@@ -67,6 +66,26 @@ abstract class QvaPayApi {
   ///
   /// Throws an [ServerException] when an error occurs on the server.
   Future<Transaction?> getTransactionDetails({required String uuid});
+
+  /// Create a [Transaction] to pay.
+  ///
+  /// The necessary data is the `amount` and the `uuid` of the destination user.
+  /// It is generally used for direct payments between one user to another.
+  Future<TransactionResponse> createTransaction({
+    required String uuid,
+    required double amount,
+    required String description,
+  });
+
+  /// Proceed to pay a certain [Transaction].
+  ///
+  /// The `uuid` of the transaction to pay is required as well as the `PIN`
+  /// of the user who is paying for it. The default `PIN` is `0000`,
+  /// it is highly recommended to configure a `PIN` secretly in the user panel.
+  Future<PaymentResponse> payTransaction({
+    required String uuid,
+    String? pin = '0000',
+  });
 
   /// Authentication status.
   Stream<OAuthStatus> get status;

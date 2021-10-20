@@ -77,7 +77,7 @@ class QvaPayApiClient extends QvaPayApi {
   @override
   Future<void> logOut() async {
     try {
-      final response = await _dio.get<String>(
+      final response = await _dio.get<Map<String, dynamic>>(
         '$_baseUrl/logout',
         options: await _authorizationHeader(),
       );
@@ -240,6 +240,85 @@ class QvaPayApiClient extends QvaPayApi {
       if (e.response != null && e.response!.statusCode == 401) {
         _controller.add(OAuthStatus.unauthenticated);
         throw UnauthorizedException();
+      }
+      throw ServerException();
+    }
+    throw ServerException();
+  }
+
+  @override
+  Future<TransactionResponse> createTransaction({
+    required String uuid,
+    required double amount,
+    required String description,
+  }) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '$_baseUrl/transactions/create',
+        data: <String, dynamic>{
+          'uuid': uuid,
+          'amount': amount,
+          'description': description,
+        },
+        options: await _authorizationHeader(),
+      );
+
+      final data = response.data;
+
+      if (data != null && data.isNotEmpty) {
+        return TransactionResponse.fromJson(data);
+      }
+    } on DioError catch (e) {
+      if (e.response != null) {
+        if (e.response!.statusCode == 401) {
+          _controller.add(OAuthStatus.unauthenticated);
+          throw UnauthorizedException();
+        }
+        if (e.response!.statusCode == 422) {
+          final data = e.response!.data as Map<String, dynamic>;
+          final err = data
+              .cast<String, List<dynamic>>()
+              .map((key, value) => MapEntry(key, value.cast<String>()));
+          throw TransactionException(message: err['errors']!.join(' '));
+        }
+      }
+      throw ServerException();
+    }
+    throw ServerException();
+  }
+
+  @override
+  Future<PaymentResponse> payTransaction({
+    required String uuid,
+    String? pin = '0000',
+  }) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '$_baseUrl/transactions/pay',
+        data: <String, dynamic>{
+          'uuid': uuid,
+          'pin': pin,
+        },
+        options: await _authorizationHeader(),
+      );
+
+      final data = response.data;
+
+      if (data != null && data.isNotEmpty) {
+        return PaymentResponse.fromJson(data);
+      }
+    } on DioError catch (e) {
+      if (e.response != null) {
+        final statusCode = e.response!.statusCode;
+        if (statusCode == 401) {
+          _controller.add(OAuthStatus.unauthenticated);
+          throw UnauthorizedException();
+        }
+        if (statusCode == 422 || statusCode == 403) {
+          final data = e.response!.data as Map<String, dynamic>;
+          final message = data.cast<String, String>();
+          throw PaymentException(message: message['message']);
+        }
       }
       throw ServerException();
     }
