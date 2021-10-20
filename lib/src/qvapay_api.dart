@@ -1,6 +1,5 @@
 import 'package:qvapay_api_client/src/exception.dart';
-import 'package:qvapay_api_client/src/models/me.dart';
-import 'package:qvapay_api_client/src/models/transaction.dart';
+import 'package:qvapay_api_client/src/models/models.dart';
 
 /// {@template qvapay_api}
 /// Abstract class for QvaPay API endpoint.
@@ -67,6 +66,18 @@ abstract class QvaPayApi {
   ///
   /// Throws an [ServerException] when an error occurs on the server.
   Future<Transaction?> getTransactionDetails({required String uuid});
+
+  /// Create a [Transaction] to pay.
+  ///
+  /// The necessary data is the `amount` and the `uuid` of the destination user.
+  /// It is generally used for direct payments between one user to another.
+  Future<TransactionResponse> createTransaction({
+    required String uuid,
+    required double amount,
+    required String description,
+  });
+
+  ///
 
   /// Authentication status.
   Stream<OAuthStatus> get status;

@@ -45,6 +45,10 @@ void main() {
   final tTransactionResponse =
       json.decode(fixture('transaction.json')) as List<dynamic>;
 
+  final tCreateTransactionResponse =
+      json.decode(fixture('create_transaction_response.json'))
+          as Map<String, dynamic>;
+
   setUp(() {
     mockDio = MockDio();
     mockStorage = MockOAuthStorage();
@@ -655,6 +659,88 @@ void main() {
         emitsInOrder(<OAuthStatus>[OAuthStatus.unauthenticated]),
       );
       verify(() => mockStorage.fetch()).called(1);
+    });
+  });
+
+  group('createTransaction', () {
+    const tCreateTransactionUrl = '${QvaPayApi.baseUrl}/transactions/create';
+
+    const tCreateTransaction = <String, dynamic>{
+      'uuid': 'c9667d83-87ed-4baa-b97c-716d233b5277',
+      'amount': 0.0,
+      'description': 'Prube desde CLI'
+    };
+
+    final tTransactionResponseModel =
+        TransactionResponse.fromJson(tCreateTransactionResponse);
+
+    test(
+        'should return [TransactionResponse] when the transaction was '
+        'successfully created.', () async {
+      when(() {
+        return mockDio.post<Map<String, dynamic>>(
+          tCreateTransactionUrl,
+          data: tCreateTransaction,
+          options: any(named: 'options'),
+        );
+      }).thenAnswer((_) async => Response(
+            data: tCreateTransactionResponse,
+            statusCode: 200,
+            requestOptions: RequestOptions(
+              path: tCreateTransactionUrl,
+            ),
+          ));
+
+      final response = await apiClient.createTransaction(
+        uuid: tCreateTransaction['uuid'] as String,
+        amount: tCreateTransaction['amount'] as double,
+        description: tCreateTransaction['description'] as String,
+      );
+
+      expect(response, tTransactionResponseModel);
+
+      verify(() => mockDio.post<Map<String, dynamic>>(
+            tCreateTransactionUrl,
+            data: tCreateTransaction,
+            options: any(named: 'options'),
+          )).called(1);
+    });
+
+    test(
+        'should throws [TransactionException] when the transaction '
+        'has an error.', () async {
+      when(() => mockDio.post<Map<String, dynamic>>(
+            tCreateTransactionUrl,
+            data: tCreateTransaction,
+            options: any(named: 'options'),
+          )).thenThrow(DioError(
+        response: Response<Map<String, dynamic>>(
+          data: const <String, List<dynamic>>{
+            'errors': <String>['El campo amount debe ser mayor a 0.']
+          },
+          statusCode: 422,
+          requestOptions: RequestOptions(
+            path: tCreateTransactionUrl,
+          ),
+        ),
+        requestOptions: RequestOptions(
+          path: tCreateTransactionUrl,
+        ),
+        error: DioErrorType.response,
+      ));
+
+      expect(
+        () => apiClient.createTransaction(
+          uuid: tCreateTransaction['uuid'] as String,
+          amount: tCreateTransaction['amount'] as double,
+          description: tCreateTransaction['description'] as String,
+        ),
+        throwsA(isA<TransactionException>().having(
+          (e) => e.message,
+          'El campo amount debe ser mayor a 0.',
+          isNotNull,
+        )),
+      );
     });
   });
 }

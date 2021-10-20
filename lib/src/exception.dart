@@ -24,3 +24,13 @@ class RegisterException implements Exception {
 
 /// Exception thrown when you are not authenticated on the platform.
 class UnauthorizedException implements Exception {}
+
+/// Exception thrown when `transaction` failure.
+class TransactionException implements Exception {
+  /// Constructor for [TransactionException].
+  const TransactionException({required this.message});
+
+  /// Message error for exception.
+  final String? message;
+}
+
