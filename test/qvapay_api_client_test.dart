@@ -74,6 +74,8 @@ void main() {
           url,
           options: any(named: 'options'),
         )).called(1);
+
+    verify(() => mockStorage.fetch()).called(1);
   }
 
   group('authentication', () {
@@ -378,6 +380,7 @@ void main() {
             options: any(named: 'options'),
           ),
         ).called(1);
+        verify(() => mockStorage.fetch()).called(1);
       });
     });
   });
@@ -399,6 +402,7 @@ void main() {
       final response = await apiClient.getUserData();
 
       expect(response, tMeModel);
+      verify(() => mockStorage.fetch()).called(1);
     });
 
     test(
@@ -429,6 +433,7 @@ void main() {
         apiClient.status,
         emitsInOrder(<OAuthStatus>[OAuthStatus.unauthenticated]),
       );
+      verify(() => mockStorage.fetch()).called(1);
     });
   });
 
@@ -516,7 +521,7 @@ void main() {
       const tDescription = 'Mobile TOP_UP';
 
       test('all are null', () async {
-        final transactionUrl = '${QvaPayApi.baseUrl}/transactions';
+        const transactionUrl = '${QvaPayApi.baseUrl}/transactions';
 
         whenTransactionsParamInUrl(url: transactionUrl);
 
@@ -565,7 +570,7 @@ void main() {
       });
 
       test('`remoteId` is not null', () async {
-        final remoteIdUrl =
+        const remoteIdUrl =
             '${QvaPayApi.baseUrl}/transactions?remoteId=$tRemoteId';
 
         whenTransactionsParamInUrl(url: remoteIdUrl);
@@ -576,7 +581,7 @@ void main() {
       });
 
       test('`description` is not null', () async {
-        final descriptionUrl =
+        const descriptionUrl =
             '${QvaPayApi.baseUrl}/transactions?description=Mobile%20TOP_UP';
 
         whenTransactionsParamInUrl(url: descriptionUrl);
@@ -704,6 +709,7 @@ void main() {
             data: tCreateTransaction,
             options: any(named: 'options'),
           )).called(1);
+      verify(() => mockStorage.fetch()).called(1);
     });
 
     test(
@@ -741,6 +747,44 @@ void main() {
           isNotNull,
         )),
       );
+      verify(() => mockStorage.fetch()).called(1);
+    });
+
+    test(
+        'should throw a [UnauthorizedException] when you are not '
+        'authenticated on the platform.', () async {
+      when(() => mockStorage.fetch()).thenAnswer((_) async => null);
+      when(() => mockDio.post<Map<String, dynamic>>(
+            tCreateTransactionUrl,
+            data: tCreateTransaction,
+            options: any(named: 'options'),
+          )).thenThrow(DioError(
+        response: Response<Map<String, dynamic>>(
+          data: <String, String>{'message': 'Unauthenticated.'},
+          statusCode: 401,
+          requestOptions: RequestOptions(
+            path: tCreateTransactionUrl,
+          ),
+        ),
+        requestOptions: RequestOptions(
+          path: tCreateTransactionUrl,
+        ),
+        error: DioErrorType.response,
+      ));
+
+      expect(
+        () async => apiClient.createTransaction(
+          uuid: tCreateTransaction['uuid'] as String,
+          amount: tCreateTransaction['amount'] as double,
+          description: tCreateTransaction['description'] as String,
+        ),
+        throwsA(isA<UnauthorizedException>()),
+      );
+      expect(
+        apiClient.status,
+        emitsInOrder(<OAuthStatus>[OAuthStatus.unauthenticated]),
+      );
+      verify(() => mockStorage.fetch()).called(1);
     });
   });
 }
