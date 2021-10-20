@@ -330,13 +330,18 @@ void main() {
     });
 
     group('logout', () {
+      const tLogOutUrl = '${QvaPayApi.baseUrl}/logout';
       test('when is successfully', () async {
         when(() => mockStorage.delete()).thenAnswer((_) async => true);
-        when(() => mockDio.get<String>(
-              '${QvaPayApi.baseUrl}/logout',
-              options: any(named: 'options'),
-            )).thenAnswer((_) async => Response(
-              data: '<html>',
+        when(() {
+          return mockDio.get<Map<String, dynamic>>(
+            tLogOutUrl,
+            options: any(named: 'options'),
+          );
+        }).thenAnswer((_) async => Response(
+              data: <String, String>{
+                'message': 'You have been successfully logged out!'
+              },
               statusCode: 200,
               requestOptions: RequestOptions(
                 path: '${QvaPayApi.baseUrl}/logout',
@@ -346,8 +351,8 @@ void main() {
         await apiClient.logOut();
 
         verify(
-          () => mockDio.get<String>(
-            '${QvaPayApi.baseUrl}/logout',
+          () => mockDio.get<Map<String, dynamic>>(
+            tLogOutUrl,
             options: any(named: 'options'),
           ),
         ).called(1);
@@ -359,27 +364,21 @@ void main() {
       });
 
       test('should throw a [ServerException] when an error occurs', () async {
-        when(() => mockDio.get<String>(
-              '${QvaPayApi.baseUrl}/logout',
+        when(() => mockDio.get<Map<String, dynamic>>(
+              tLogOutUrl,
               options: any(named: 'options'),
             )).thenThrow(DioError(
-          requestOptions: RequestOptions(
-            path: '${QvaPayApi.baseUrl}/logout',
+          response: Response<Map<String, dynamic>>(
+            data: <String, String>{'message': 'Server Exception.'},
+            statusCode: 500,
+            requestOptions: RequestOptions(path: tLogOutUrl),
           ),
+          requestOptions: RequestOptions(path: tLogOutUrl),
+          error: DioErrorType.response,
         ));
 
-        try {
-          await apiClient.logOut();
-        } catch (e) {
-          expect(e, isA<ServerException>());
-        }
+        expect(() => apiClient.logOut(), throwsA(isA<ServerException>()));
 
-        verify(
-          () => mockDio.get<String>(
-            '${QvaPayApi.baseUrl}/logout',
-            options: any(named: 'options'),
-          ),
-        ).called(1);
         verify(() => mockStorage.fetch()).called(1);
       });
     });

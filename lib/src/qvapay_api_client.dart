@@ -77,7 +77,7 @@ class QvaPayApiClient extends QvaPayApi {
   @override
   Future<void> logOut() async {
     try {
-      final response = await _dio.get<String>(
+      final response = await _dio.get<Map<String, dynamic>>(
         '$_baseUrl/logout',
         options: await _authorizationHeader(),
       );
