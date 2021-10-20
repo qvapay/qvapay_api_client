@@ -49,6 +49,9 @@ void main() {
       json.decode(fixture('create_transaction_response.json'))
           as Map<String, dynamic>;
 
+  final tPaymentResponse =
+      json.decode(fixture('payment_response.json')) as Map<String, dynamic>;
+
   setUp(() {
     mockDio = MockDio();
     mockStorage = MockOAuthStorage();
@@ -782,6 +785,189 @@ void main() {
       expect(
         apiClient.status,
         emitsInOrder(<OAuthStatus>[OAuthStatus.unauthenticated]),
+      );
+      verify(() => mockStorage.fetch()).called(1);
+    });
+  });
+
+  group('payTransaction', () {
+    const tPayTransactionUrl = '${QvaPayApi.baseUrl}/transactions/pay';
+
+    const tPayTransactionData = <String, dynamic>{
+      'uuid': 'c9667d83-87ed-4baa-b97c-716d233b5277',
+      'pin': '0000',
+    };
+
+    final tPaymentResponseModel = PaymentResponse.fromJson(tPaymentResponse);
+
+    test(
+        'should return [PaymentResponse] when the transaction was '
+        'successfully created.', () async {
+      when(() {
+        return mockDio.post<Map<String, dynamic>>(
+          tPayTransactionUrl,
+          data: tPayTransactionData,
+          options: any(named: 'options'),
+        );
+      }).thenAnswer((_) async => Response(
+            data: tPaymentResponse,
+            statusCode: 200,
+            requestOptions: RequestOptions(
+              path: tPayTransactionUrl,
+            ),
+          ));
+
+      final response = await apiClient.payTransaction(
+        uuid: tPayTransactionData['uuid'] as String,
+        pin: tPayTransactionData['pin'] as String,
+      );
+
+      expect(response, tPaymentResponseModel);
+
+      verify(() => mockDio.post<Map<String, dynamic>>(
+            tPayTransactionUrl,
+            data: tPayTransactionData,
+            options: any(named: 'options'),
+          )).called(1);
+      verify(() => mockStorage.fetch()).called(1);
+    });
+
+    test('should throw [PaymentException] when the `pin` is incorrect.',
+        () async {
+      when(() => mockDio.post<Map<String, dynamic>>(
+            tPayTransactionUrl,
+            data: tPayTransactionData,
+            options: any(named: 'options'),
+          )).thenThrow(DioError(
+        response: Response<Map<String, dynamic>>(
+          data: const <String, String>{
+            'message': 'Incorrect PIN',
+          },
+          statusCode: 403,
+          requestOptions: RequestOptions(
+            path: tPayTransactionUrl,
+          ),
+        ),
+        requestOptions: RequestOptions(
+          path: tPayTransactionUrl,
+        ),
+        error: DioErrorType.response,
+      ));
+
+      expect(
+        () => apiClient.payTransaction(
+          uuid: tPayTransactionData['uuid'] as String,
+          pin: tPayTransactionData['pin'] as String,
+        ),
+        throwsA(isA<PaymentException>().having(
+          (e) => e.message,
+          'Incorrect PIN',
+          isNotNull,
+        )),
+      );
+      verify(() => mockStorage.fetch()).called(1);
+    });
+    test(
+        'should throw [PaymentException] when the account does not have '
+        'enough balance.', () async {
+      when(() => mockDio.post<Map<String, dynamic>>(
+            tPayTransactionUrl,
+            data: tPayTransactionData,
+            options: any(named: 'options'),
+          )).thenThrow(DioError(
+        response: Response<Map<String, dynamic>>(
+          data: const <String, String>{
+            'message': 'Your account have not enough balance'
+          },
+          statusCode: 422,
+          requestOptions: RequestOptions(
+            path: tPayTransactionUrl,
+          ),
+        ),
+        requestOptions: RequestOptions(
+          path: tPayTransactionUrl,
+        ),
+        error: DioErrorType.response,
+      ));
+
+      expect(
+        () => apiClient.payTransaction(
+          uuid: tPayTransactionData['uuid'] as String,
+          pin: tPayTransactionData['pin'] as String,
+        ),
+        throwsA(isA<PaymentException>().having(
+          (e) => e.message,
+          'Your account have not enough balance',
+          isNotNull,
+        )),
+      );
+      verify(() => mockStorage.fetch()).called(1);
+    });
+
+    test(
+        'should throw [UnauthorizedException] when you are not '
+        'authenticated on the platform.', () async {
+      when(() => mockStorage.fetch()).thenAnswer((_) async => null);
+      when(() => mockDio.post<Map<String, dynamic>>(
+            tPayTransactionUrl,
+            data: tPayTransactionData,
+            options: any(named: 'options'),
+          )).thenThrow(DioError(
+        response: Response<Map<String, dynamic>>(
+          data: <String, String>{'message': 'Unauthenticated.'},
+          statusCode: 401,
+          requestOptions: RequestOptions(
+            path: tPayTransactionUrl,
+          ),
+        ),
+        requestOptions: RequestOptions(
+          path: tPayTransactionUrl,
+        ),
+        error: DioErrorType.response,
+      ));
+
+      expect(
+        () async => apiClient.payTransaction(
+          uuid: tPayTransactionData['uuid'] as String,
+          pin: tPayTransactionData['pin'] as String,
+        ),
+        throwsA(isA<UnauthorizedException>()),
+      );
+      expect(
+        apiClient.status,
+        emitsInOrder(<OAuthStatus>[OAuthStatus.unauthenticated]),
+      );
+      verify(() => mockStorage.fetch()).called(1);
+    });
+
+    test(
+        'should throw [ServerException] when it does not mach '
+        'any specific error.', () async {
+      when(() => mockStorage.fetch()).thenAnswer((_) async => null);
+      when(() => mockDio.post<Map<String, dynamic>>(
+            tPayTransactionUrl,
+            data: tPayTransactionData,
+            options: any(named: 'options'),
+          )).thenThrow(DioError(
+        response: Response<Map<String, dynamic>>(
+          data: <String, String>{'message': 'Server Exception.'},
+          statusCode: 500,
+          requestOptions: RequestOptions(
+            path: tPayTransactionUrl,
+          ),
+        ),
+        requestOptions: RequestOptions(
+          path: tPayTransactionUrl,
+        ),
+        error: DioErrorType.response,
+      ));
+
+      expect(
+        () => apiClient.payTransaction(
+          uuid: tPayTransactionData['uuid'] as String,
+          pin: tPayTransactionData['pin'] as String,
+        ),
+        throwsA(isA<ServerException>()),
       );
       verify(() => mockStorage.fetch()).called(1);
     });

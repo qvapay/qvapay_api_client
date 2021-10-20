@@ -77,7 +77,15 @@ abstract class QvaPayApi {
     required String description,
   });
 
+  /// Proceed to pay a certain [Transaction].
   ///
+  /// The `uuid` of the transaction to pay is required as well as the `PIN`
+  /// of the user who is paying for it. The default `PIN` is `0000`,
+  /// it is highly recommended to configure a `PIN` secretly in the user panel.
+  Future<PaymentResponse> payTransaction({
+    required String uuid,
+    String? pin = '0000',
+  });
 
   /// Authentication status.
   Stream<OAuthStatus> get status;

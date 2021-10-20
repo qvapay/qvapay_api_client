@@ -286,4 +286,42 @@ class QvaPayApiClient extends QvaPayApi {
     }
     throw ServerException();
   }
+
+  @override
+  Future<PaymentResponse> payTransaction({
+    required String uuid,
+    String? pin = '0000',
+  }) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '$_baseUrl/transactions/pay',
+        data: <String, dynamic>{
+          'uuid': uuid,
+          'pin': pin,
+        },
+        options: await _authorizationHeader(),
+      );
+
+      final data = response.data;
+
+      if (data != null && data.isNotEmpty) {
+        return PaymentResponse.fromJson(data);
+      }
+    } on DioError catch (e) {
+      if (e.response != null) {
+        final statusCode = e.response!.statusCode;
+        if (statusCode == 401) {
+          _controller.add(OAuthStatus.unauthenticated);
+          throw UnauthorizedException();
+        }
+        if (statusCode == 422 || statusCode == 403) {
+          final data = e.response!.data as Map<String, dynamic>;
+          final message = data.cast<String, String>();
+          throw PaymentException(message: message['message']);
+        }
+      }
+      throw ServerException();
+    }
+    throw ServerException();
+  }
 }

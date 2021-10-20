@@ -34,3 +34,11 @@ class TransactionException implements Exception {
   final String? message;
 }
 
+/// Exception thrown when `pay` failure.
+class PaymentException implements Exception {
+  /// Constructor for [PaymentException].
+  const PaymentException({required this.message});
+
+  /// Message error for exception.
+  final String? message;
+}
