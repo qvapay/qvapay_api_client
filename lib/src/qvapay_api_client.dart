@@ -42,12 +42,12 @@ class QvaPayApiClient extends QvaPayApi {
       final data = response.data;
 
       if (data != null && data.isNotEmpty) {
-        final dataMap = Map<String, String>.from(data);
+        final dataMap = Map<String, dynamic>.from(data);
         if (dataMap.containsKey('token')) {
-          final token = dataMap['token'];
+          final token = dataMap['token'] as String;
           _accessToken = token;
           _controller.add(OAuthStatus.authenticated);
-          await _storage.save(token!);
+          await _storage.save(token);
           return token;
         }
         _controller.add(OAuthStatus.unauthenticated);
