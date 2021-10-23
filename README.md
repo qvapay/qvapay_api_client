@@ -1,5 +1,6 @@
 # qvapay_api_client
 
+![coverage][coverage_badge]
 [![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
 [![License: MIT][license_badge]][license_link]
 
@@ -90,6 +91,26 @@ class CustomSecureStorage extends OAuthStorage {
 }
 ```
 
+## Running Tests 🧪
+
+To run all unit tests use the following command:
+
+```sh
+# Run all test
+$ flutter test --coverage --test-randomize-ordering-seed random
+```
+
+To view the generated coverage report you can use [lcov](https://github.com/linux-test-project/lcov).
+
+```sh
+# Generate Coverage Report
+$ genhtml coverage/lcov.info -o coverage/
+
+# Open Coverage Report
+$ open coverage/index.html
+```
+
+[coverage_badge]: coverage_badge.svg
 [dio_link]: https://pub.dev/packages/dio
 [flutter_secure_storage_link]: https://pub.dev/packages/flutter_secure_storage
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
