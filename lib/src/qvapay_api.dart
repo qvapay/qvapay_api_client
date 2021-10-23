@@ -118,37 +118,3 @@ abstract class OAuthStorage {
   /// Delete token in the storage
   Future<void> delete();
 }
-
-/// {@template oauth_memory_storage}
-/// Save the token in memory.
-///
-/// ```dart
-/// class OAuthMemoryStorage extends OAuthStorage {
-///   String? _token;
-///   @override
-///   Future<void> delete() async => _token = null;
-///   @override
-///   Future<String?> fetch() async => _token;
-///   @override
-///   Future<bool> save(String token) async {
-///     _token = token;
-///     return true;
-///   }
-/// }
-/// ```
-/// {@endtemplate}
-class OAuthMemoryStorage extends OAuthStorage {
-  String? _token;
-
-  @override
-  Future<void> delete() async => _token = null;
-
-  @override
-  Future<String?> fetch() async => _token;
-
-  @override
-  Future<bool> save(String token) async {
-    _token = token;
-    return true;
-  }
-}
