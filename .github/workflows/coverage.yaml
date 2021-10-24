@@ -18,7 +18,6 @@ jobs:
       - name: Run CI workflow (format, analyze)
         run: |
           dart format --set-exit-if-changed lib test
-          dart analyze --fatal-infos --fatal-warnings
 
       - name: Run tests and generate the coverage
         run: |
