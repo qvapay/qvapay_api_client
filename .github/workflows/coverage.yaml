@@ -1,0 +1,40 @@
+name: Coverage report
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1.5.0
+
+      - name: Install dependencies for all packages
+        run: |
+          dart pub get
+
+      - name: Run CI workflow (format, analyze)
+        run: |
+          dart format --set-exit-if-changed lib test
+          dart analyze --fatal-infos --fatal-warnings
+
+      - name: Run tests and generate the coverage
+        run: |
+          flutter test --coverage --test-randomize-ordering-seed random
+          genhtml coverage/lcov.info -o coverage/
+
+      - name: Check 95% code coverage
+        uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
+        with:
+          path: "./coverage/lcov.info"
+          min_coverage: 95
+          exclude: "**/*.freezed.dart **/*.g.dart **/*.gr.dart"
+
+      - name: Upload coverage data to codecov.io
+        uses: codecov/codecov-action@v2
+        with:
+          files: "./coverage/lcov.info"
+          fail_ci_if_error: true
+          verbose: true
