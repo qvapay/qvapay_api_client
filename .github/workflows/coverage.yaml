@@ -33,9 +33,9 @@ jobs:
           min_coverage: 95
           exclude: "**/*.freezed.dart **/*.g.dart **/*.gr.dart"
 
-      - name: Upload coverage data to codecov.io
-        uses: codecov/codecov-action@v2
-        with:
-          files: "./coverage/lcov.info"
-          fail_ci_if_error: true
-          verbose: true
+      # - name: Upload coverage data to codecov.io
+      #   uses: codecov/codecov-action@v2
+      #   with:
+      #     files: "./coverage/lcov.info"
+      #     fail_ci_if_error: true
+      #     verbose: true
