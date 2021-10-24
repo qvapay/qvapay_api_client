@@ -9,20 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1.5.0
+      - uses: dart-lang/setup-dart@v1
 
-      - name: Install dependencies for all packages
-        run: |
-          dart pub get
+      - name: Install Dependencies
+        run: pub get
 
-      - name: Run CI workflow (format, analyze)
-        run: |
-          dart format --set-exit-if-changed lib test
+      - name: Format
+        run: dart format --set-exit-if-changed .
 
-      - name: Run tests and generate the coverage
+      - name: Analyze
+        run: dart analyze --fatal-infos --fatal-warnings .
+
+      - name: Run Tests
         run: |
-          flutter test --coverage --test-randomize-ordering-seed random
-          genhtml coverage/lcov.info -o coverage/
+          pub global activate test_coverage
+          export PATH=$PATH:$HOME/.pub-cache/bin
+          test_coverage
 
       - name: Check 95% code coverage
         uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
