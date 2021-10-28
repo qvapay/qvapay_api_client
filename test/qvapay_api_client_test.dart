@@ -1058,7 +1058,7 @@ void main() {
       'pin': '0000',
     };
 
-    final tPaymentResponseModel = PaymentResponse.fromJson(tPaymentResponse);
+    final tPaymentResponseModel = Transaction.fromJson(tPaymentResponse);
 
     test(
         'should return [PaymentResponse] when the transaction was '

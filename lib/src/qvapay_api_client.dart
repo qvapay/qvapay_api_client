@@ -288,7 +288,7 @@ class QvaPayApiClient extends QvaPayApi {
   }
 
   @override
-  Future<PaymentResponse> payTransaction({
+  Future<Transaction> payTransaction({
     required String uuid,
     String? pin = '0000',
   }) async {
@@ -305,7 +305,7 @@ class QvaPayApiClient extends QvaPayApi {
       final data = response.data;
 
       if (data != null && data.isNotEmpty) {
-        return PaymentResponse.fromJson(data);
+        return Transaction.fromJson(data);
       }
     } on DioError catch (e) {
       if (e.response != null) {
