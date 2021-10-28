@@ -3,14 +3,18 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:qvapay_api_client/src/models/app.dart';
 import 'package:qvapay_api_client/src/models/owner.dart';
-import 'package:qvapay_api_client/src/models/paid_by.dart';
+import 'package:qvapay_api_client/src/models/paid.dart';
 import 'package:qvapay_api_client/src/models/service_buy.dart';
 import 'package:qvapay_api_client/src/models/wallet.dart';
 import 'package:qvapay_api_client/src/utils.dart';
 
 part 'transaction.g.dart';
 
-@JsonSerializable(explicitToJson: true, fieldRename: FieldRename.snake)
+@JsonSerializable(
+  explicitToJson: true,
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+)
 class Transaction extends Equatable {
   const Transaction({
     required this.uuid,
@@ -21,11 +25,12 @@ class Transaction extends Equatable {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
-    required this.logo,
-    required this.app,
-    required this.paidBy,
-    required this.appOwner,
-    required this.owner,
+    this.logo,
+    this.app,
+    this.paidBy,
+    this.payTo,
+    this.appOwner,
+    this.owner,
     this.wallet,
     this.serviceBuy,
   });
@@ -44,11 +49,12 @@ class Transaction extends Equatable {
   final DateTime createdAt;
   @JsonKey(toJson: toStringWithMicrosecond)
   final DateTime updatedAt;
-  final String logo;
-  final App app;
-  final PaidBy paidBy;
-  final App appOwner;
-  final Owner owner;
+  final String? logo;
+  final App? app;
+  final Paid? paidBy;
+  final Paid? payTo;
+  final App? appOwner;
+  final Owner? owner;
   final Wallet? wallet;
   @JsonKey(name: 'servicebuy')
   final ServiceBuy? serviceBuy;

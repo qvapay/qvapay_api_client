@@ -1,7 +1,7 @@
 {
   "uuid": "a0914c93-c93c-42b4-a8ec-4d12ebb7cda7",
   "app_id": 0,
-  "amount": 11.56,
+  "amount": "11.56",
   "description": "Pollo por pescado",
   "remote_id": "QVAPAY_APP",
   "status": "pending",
