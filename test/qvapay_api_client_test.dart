@@ -879,15 +879,15 @@ void main() {
 
     const tCreateTransaction = <String, dynamic>{
       'uuid': 'c9667d83-87ed-4baa-b97c-716d233b5277',
-      'amount': 0.0,
+      'amount': '0.0',
       'description': 'Prube desde CLI'
     };
 
     final tTransactionResponseModel =
-        TransactionResponse.fromJson(tCreateTransactionResponse);
+        Transaction.fromJson(tCreateTransactionResponse);
 
     test(
-        'should return [TransactionResponse] when the transaction was '
+        'should return [Transaction] when the transaction was '
         'successfully created.', () async {
       when(() {
         return mockDio.post<Map<String, dynamic>>(
@@ -905,7 +905,7 @@ void main() {
 
       final response = await apiClient.createTransaction(
         uuid: tCreateTransaction['uuid'] as String,
-        amount: tCreateTransaction['amount'] as double,
+        amount: double.parse(tCreateTransaction['amount'] as String),
         description: tCreateTransaction['description'] as String,
       );
 
@@ -945,7 +945,7 @@ void main() {
       expect(
         () => apiClient.createTransaction(
           uuid: tCreateTransaction['uuid'] as String,
-          amount: tCreateTransaction['amount'] as double,
+          amount: double.parse(tCreateTransaction['amount'] as String),
           description: tCreateTransaction['description'] as String,
         ),
         throwsA(isA<TransactionException>().having(
@@ -982,7 +982,7 @@ void main() {
       expect(
         () async => apiClient.createTransaction(
           uuid: tCreateTransaction['uuid'] as String,
-          amount: tCreateTransaction['amount'] as double,
+          amount: double.parse(tCreateTransaction['amount'] as String),
           description: tCreateTransaction['description'] as String,
         ),
         throwsA(isA<UnauthorizedException>()),
@@ -1015,7 +1015,7 @@ void main() {
       expect(
         () async => apiClient.createTransaction(
           uuid: tCreateTransaction['uuid'] as String,
-          amount: tCreateTransaction['amount'] as double,
+          amount: double.parse(tCreateTransaction['amount'] as String),
           description: tCreateTransaction['description'] as String,
         ),
         throwsA(isA<ServerException>()),
@@ -1041,7 +1041,7 @@ void main() {
         expect(
           () async => apiClient.createTransaction(
             uuid: tCreateTransaction['uuid'] as String,
-            amount: tCreateTransaction['amount'] as double,
+            amount: double.parse(tCreateTransaction['amount'] as String),
             description: tCreateTransaction['description'] as String,
           ),
           throwsA(isA<ServerException>()),

@@ -7,5 +7,4 @@ export 'package:qvapay_api_client/src/models/payment_response.dart';
 export 'package:qvapay_api_client/src/models/service.dart';
 export 'package:qvapay_api_client/src/models/service_buy.dart';
 export 'package:qvapay_api_client/src/models/transaction.dart';
-export 'package:qvapay_api_client/src/models/transaction_response.dart';
 export 'package:qvapay_api_client/src/models/wallet.dart';

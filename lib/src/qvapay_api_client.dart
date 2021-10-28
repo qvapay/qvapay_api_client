@@ -247,7 +247,7 @@ class QvaPayApiClient extends QvaPayApi {
   }
 
   @override
-  Future<TransactionResponse> createTransaction({
+  Future<Transaction> createTransaction({
     required String uuid,
     required double amount,
     required String description,
@@ -257,7 +257,7 @@ class QvaPayApiClient extends QvaPayApi {
         '$_baseUrl/transactions/create',
         data: <String, dynamic>{
           'uuid': uuid,
-          'amount': amount,
+          'amount': amount.toString(),
           'description': description,
         },
         options: await _authorizationHeader(),
@@ -266,7 +266,7 @@ class QvaPayApiClient extends QvaPayApi {
       final data = response.data;
 
       if (data != null && data.isNotEmpty) {
-        return TransactionResponse.fromJson(data);
+        return Transaction.fromJson(data);
       }
     } on DioError catch (e) {
       if (e.response != null) {
