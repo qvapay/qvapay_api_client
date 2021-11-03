@@ -23,3 +23,12 @@
 
 - docs(readme): add example of how to implement the client.
 - test: reach 100% test coverage.
+
+## 0.0.5
+
+- fix: casting error in login response
+- update: change the analysis_options version to 2.4.0
+- refactor(owner): add `email` property
+- **BREAKING:** refactor(transaction!): merged class `PaidBy` y `PayTo` into a single class `Paid`
+- **BREAKING:** refactor(create_transaction!): return a `Transaction` instead of `TransactionResponse`
+- **BREAKING:** refactor(pay_transaction!): return a `Transaction` instead of `PaymentResponse`
