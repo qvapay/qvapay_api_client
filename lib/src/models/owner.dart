@@ -4,13 +4,18 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'owner.g.dart';
 
-@JsonSerializable(explicitToJson: true, fieldRename: FieldRename.snake)
+@JsonSerializable(
+  explicitToJson: true,
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+)
 class Owner extends Equatable {
   const Owner({
     this.uuid,
     required this.username,
     required this.name,
     this.lastname,
+    this.email,
     this.bio,
     this.logo,
     this.kyc,
@@ -23,6 +28,7 @@ class Owner extends Equatable {
   final String username;
   final String name;
   final String? lastname;
+  final String? email;
   final String? bio;
   final String? logo;
   final int? kyc;
@@ -34,6 +40,7 @@ class Owner extends Equatable {
       username,
       name,
       lastname,
+      email,
       bio,
       logo,
       kyc,
