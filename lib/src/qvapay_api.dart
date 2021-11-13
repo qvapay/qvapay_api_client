@@ -53,10 +53,10 @@ abstract class QvaPayApi {
   ///
   /// Throws an [ServerException] when an error occurs on the server.
   Future<List<Transaction>> getTransactions({
-    DateTime start,
-    DateTime end,
-    String remoteId,
-    String description,
+    DateTime? start,
+    DateTime? end,
+    String? remoteId,
+    String? description,
   });
 
   /// Get all the details of a specific transaction based on its `UUID`.
